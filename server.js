@@ -1,10 +1,15 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Add this line to allow all cross-origin requests
+app.use(cors({ origin: '*' }));
+
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
 app.post('/relay', async (req, res) => {
