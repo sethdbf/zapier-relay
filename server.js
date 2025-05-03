@@ -1,12 +1,11 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Allow all subdomains of dunbridgefinancial.com
+// ✅ CORS: allow all *.dunbridgefinancial.com subdomains
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || origin.endsWith('.dunbridgefinancial.com')) {
@@ -17,6 +16,7 @@ app.use(cors({
   }
 }));
 
+// ✅ Parse incoming JSON
 app.use(bodyParser.json());
 
 // ✅ Health check route
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
   res.send('Zapier Relay is running');
 });
 
-// ✅ POST relay to Zapier
+// ✅ Main relay route
 app.post('/relay', async (req, res) => {
   try {
     console.log('📦 Incoming Payload:', JSON.stringify(req.body, null, 2));
@@ -45,7 +45,7 @@ app.post('/relay', async (req, res) => {
     res.set('X-Relay-Version', '1.0.0');
     res.status(200).send({ success: true, zapierResponse: result });
   } catch (err) {
-    console.error('❌ Relay error:', err);
+    console.error('❌ Relay error:', err.message, err.stack);
     res.status(500).send({ success: false, error: err.message });
   }
 });
